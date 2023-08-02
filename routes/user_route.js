@@ -9,7 +9,7 @@ const { v1: uuidv1 } = require('uuid');
 app.use(bodyParser.json());
 
 // 회원가입 라우트
-router.post('/signup', async (req, res) => {
+router.post('/',async (req, res) => {
   try {
     const { email, password, nickname, name, phone } = req.body; //HTTP Request의 Body에서 추출 *객체구조 분해* 이용
     const UUID = uuidv1();
@@ -22,7 +22,7 @@ router.post('/signup', async (req, res) => {
 });
 
 // 로그인 라우트
-router.get('/signin', async (req, res) => {
+router.get('/',async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ where: { email: email } });
@@ -41,7 +41,7 @@ router.get('/signin', async (req, res) => {
 });
 
 //회원탈퇴 라우트
-router.delete('/delete', async (req, res) => {
+router.delete('/',async (req, res) => {
   try {
     const { email, password, status } = req.body;
     const user = await User.findOne({ where: { email: email } }); //회원 탈퇴할 회원 조회 (email 기준)
@@ -61,7 +61,7 @@ router.delete('/delete', async (req, res) => {
 });
 
 //정보 수정 라우트
-router.put('/modify', async (req, res) => {
+router.put('/',async (req, res) => {
   try {
     const now = require('../custom_modules/nowDate'); //커스텀 모듈을 이용해 현재 시간 불러옴
     const { email, password, nickname, name, phone } = req.body;
@@ -72,8 +72,9 @@ router.put('/modify', async (req, res) => {
 
     } else {
       const token = jwt.sign({ userUUID: user.UUID }, process.env.JWT_SECRET, { expiresIn: '24h' }); //JWT
-      const updatedUser = { UUID: user.UUID, email: email, password: password, nickname: nickname, name: name, phone: phone, mod_date: now }; //UPDATE된 유저 결과를 보여주기 위한 객체
-      const userCount = await User.update({ pasword: password, nickname: nickname, name: name, phone: phone, mod_date: now }, { where: { UUID: userUUID } });  //DB접근 (user UUID를 기준으로 데이터 UPDATE)
+      /* const updatedUser = { UUID: user.UUID, email: email, password: password, nickname: nickname, name: name, phone: phone, mod_date: now }; //UPDATE된 유저 결과를 보여주기 위한 객체 */
+      const userCount = await User.update({ pasword: password, nickname: nickname, name: name, phone: phone, mod_date: now }, { where: { UUID: user.UUID } });  //DB접근 (user UUID를 기준으로 데이터 UPDATE)
+      const updatedUser = await User.findOne({ where: { UUID: user.UUID } }); //UPDATE된 유저 결과를 보여주기 위한 객체
       res.json({ count: userCount, update_result_user: updatedUser, token, status: "S" }); //UPDATE결과 HTTP response로 전송
     }
   } catch (error) {

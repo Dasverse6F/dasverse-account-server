@@ -10,7 +10,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
 // 라우트
-app.use('/user', userRouter);
+app.use('/account', userRouter);
 
 // 서버 시작
 app.listen(3000, () => {
