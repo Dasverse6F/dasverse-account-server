@@ -105,18 +105,30 @@ router.post('/check',async (req, res) => {
     if (header == "email" && email) { //이메일 체크
       check_flag = "이메일";
       user = await User.findOne({ where: { email: email } }); 
+      if (!emailRegex.test(email)) {
+        res.status(400).json({flag: "CK",status: "E", result_message: "올바른 이메일 형식을 사용해주세요"})
+        return;
+      } 
     } else if (header == "nickname" && nickname) { //닉네임 체크
       check_flag = "닉네임";
       user = await User.findOne({ where: { nickname: nickname } }); 
+      if (!nicknameRegex1.test(nickname) && !nicknameRegex2.test(nickname)) {
+        res.status(400).json({flag: "CK", status: "E", result_message: "닉네임은 한글 2~8자, 영어4~12자만 허용됩니다."})
+        return;
+      } 
     } else if (header == "phone" && phone){ // 전화번호 체크
       check_flag = "전화번호";
-      cuser = await User.findOne({ where: { phone: phone } }); 
+      user = await User.findOne({ where: { phone: phone } }); 
+      if (!phoneRegex.test(phone)) {
+        res.status(400).json({flag: "CK",status: "E", result_message: "전화번호는 번호만 입력해주세요."})
+        return;
+      }
     }
-    
     if (!user) { //유저가 없는경우
       res.status(200).json({ flag:"CK",status: "S", result_message: "사용가능한 "+check_flag+" 입니다."});
     } else {
       res.status(401).json({ flag:"CK", result_message: check_flag+"(이)가 중복됩니다.", status: "E" });
+      return;
     }
   } catch (error) {
     console.log(error);
@@ -146,7 +158,6 @@ function validationCheck(res, email, password, nickname, name, phone) {
     res.status(400).json({flag: "C", status: "E", result_message: "정상적인 이름을 작성해주세요"})
     return false;
   }
-  console.log("error");
   return true;
 }
 
