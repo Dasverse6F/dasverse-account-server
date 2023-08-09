@@ -42,7 +42,6 @@ Users.init(
       type: DataTypes.STRING,
       unique: true,
       primaryKey: true // UUID를 기본 키로 설정
-
     },
     email: {
       type: DataTypes.STRING,
@@ -96,7 +95,6 @@ Users.init(
       },
     },
   },
-  
 );
 
 module.exports = Users;
