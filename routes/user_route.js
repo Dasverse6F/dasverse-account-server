@@ -120,7 +120,7 @@ router.post('/check',async (req, res) => {
       check_flag = "전화번호";
       user = await User.findOne({ where: { phone: phone } }); 
       if (!phoneRegex.test(phone)) {
-        res.status(400).json({flag: "CK",status: "E", result_message: "전화번호는 번호만 입력해주세요."})
+        res.status(400).json({flag: "CK",status: "E", result_message: "올바른 전화번호를 입력해주세요"})
         return;
       }
     }
@@ -147,7 +147,7 @@ function validationCheck(res, email, password, nickname, name, phone) {
     return false;
   }
   if (!phoneRegex.test(phone)) {
-    res.status(400).json({flag: "C",status: "E", result_message: "전화번호는 번호만 입력해주세요."})
+    res.status(400).json({flag: "C",status: "E", result_message: "올바른 전화번호를 입력해주세요"})
     return false;
   }
   if (!emailRegex.test(email)) {
