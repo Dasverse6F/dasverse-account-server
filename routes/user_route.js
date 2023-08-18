@@ -30,7 +30,7 @@ router.post('/signup',async (req, res) => {
     }
     const UUID = uuidv1();
     const user = await User.create({ UUID: UUID, email: email, password: password, nickname: nickname, name: name, phone: phone }); //await User.create 메소드를 통해 DB에 접근하여 INSERT
-    res.status(201).json({userUUID: UUID, status: "S" , result_message: "회원가입이 완료되었습니다.", flag:"C"}); //HTTP response 클라이언트에게 송신
+    res.status(201).json({UUID: UUID, status: "S" , result_message: "회원가입이 완료되었습니다.", flag:"C"}); //HTTP response 클라이언트에게 송신
   } catch (error) {
     res.status(500).json({ flag:"C", error_message: error.toString(), status: "E", result_message: "에러가 발생했습니다." });
     console.log(error);
@@ -46,7 +46,9 @@ router.post('/signin',async (req, res) => {
       res.status(401).json({ flag:"R", result_message: "유저가 존재하지 않거나 비밀번호가 일치하지 않습니다.", status: "E" }); //에러 처리
 
     } else {
-      res.status(200).json({ flag:"R", userUUID: user.UUID, status: "S", result_message: "로그인 성공!" });
+      res.status(200).json({ flag:"R", user : 
+          { UUID:user.UUID, email:user.email, password:user.password, nickname:user.nickname, name:user.name, phone:user.phone, GRADE_CODE:user.GRADE_CODE, AUTH_CODE:user.AUTH_CODE, reg_date:user.reg_date, mod_date:user.mod_date, connection:user.connection, status:user.status }, 
+              status: "S", result_message: "로그인 성공!" });
     }
   } catch (error) {
     console.log(error);
@@ -139,23 +141,23 @@ module.exports = router;
 
 function validationCheck(res, email, password, nickname, name, phone) {
   if (!nicknameRegex1.test(nickname) && !nicknameRegex2.test(nickname)) {
-    res.status(400).json({flag: "C", status: "E", result_message: "닉네임은 한글 2~8자, 영어4~12자만 허용됩니다."})
+    res.status(400).json({flag: "V", status: "E", result_message: "닉네임은 한글 2~8자, 영어4~12자만 허용됩니다."})
     return false;
   } 
   if (!passwordRegex.test(password)) {
-    res.status(400).json({flag: "C",status: "E", result_message: "비밀번호는 영어 대문자, 특수기호 포함 8~16자만 허용됩니다."})
+    res.status(400).json({flag: "V",status: "E", result_message: "비밀번호는 영어 대문자, 특수기호 포함 8~16자만 허용됩니다."})
     return false;
   }
   if (!phoneRegex.test(phone)) {
-    res.status(400).json({flag: "C",status: "E", result_message: "올바른 전화번호를 입력해주세요"})
+    res.status(400).json({flag: "V",status: "E", result_message: "올바른 전화번호를 입력해주세요"})
     return false;
   }
   if (!emailRegex.test(email)) {
-    res.status(400).json({flag: "C",status: "E", result_message: "올바른 이메일 형식을 사용해주세요"})
+    res.status(400).json({flag: "V",status: "E", result_message: "올바른 이메일 형식을 사용해주세요"})
     return false;
   } 
   if (!nameRegex.test(name)) {
-    res.status(400).json({flag: "C", status: "E", result_message: "정상적인 이름을 작성해주세요"})
+    res.status(400).json({flag: "V", status: "E", result_message: "정상적인 이름을 작성해주세요"})
     return false;
   }
   return true;
